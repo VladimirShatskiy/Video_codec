@@ -12,20 +12,15 @@ def reader_plate(cnts, fileimage: object, plate_namders: list, carplate_image_RG
         x, y, w, h = cv2.boundingRect(contur)
 
         if area > 5000:
-
             img = fileimage[y:y+h, x:x+w]
-            # cv2.imshow('test', img)
-            # cv2.waitKey()
             result = pytesseract.image_to_string(image=img, lang='rus+eng')
 
             if len(result) > 5:
-                data = re.findall(r'\d+', result)
-                for item in data:
-                    if len(item) == 4:
-                        strt = result.find(item)
-                        ret_str = result[strt: strt + 9]
-                        if len(ret_str) == 9:
-                            plate_namders.append(ret_str)
+
+                databl = re.findall(r'\d{4} \w{2}-\d', result)
+                dataru= re.findall(r'\w\d{3}\w\w\d\d\d')
+                if dataru:
+                    plate_namders.append(dataru[0])
                 carplate_image_RGB = cv2.rectangle(carplate_image_RGB, (x, y), (x + w, y + h), (0, 255, 0), 2)
     img = cv2.resize(carplate_image_RGB, (800, 600))
     cv2.imshow('test', img)
